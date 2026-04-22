@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard Kepemilikan Saham >1%</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="header-top">
+        <h1>Dashboard Kepemilikan Saham >1%</h1>
+      </div>
+      <p class="subtitle">Data Kustodian Sentral Efek Indonesia per 27 Februari 2026 <span class="badge">Live</span></p>
+    </div>
+  </header>
+
+  <div class="filters">
+    <div class="container">
+      <div class="filter-grid">
+        <div class="filter-item">
+          <label for="filter-emiten">Emiten</label>
+          <input id="filter-emiten" list="emiten-list" placeholder="Semua">
+          <datalist id="emiten-list"></datalist>
+        </div>
+        <div class="filter-item">
+          <label for="filter-tipe">Tipe Investor</label>
+          <select id="filter-tipe"><option>Semua</option></select>
+        </div>
+        <div class="filter-item">
+          <label for="filter-asal">Asal</label>
+          <select id="filter-asal">
+            <option>Semua</option>
+            <option>Lokal (L)</option>
+            <option>Asing (A)</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="filter-domisili">Domisili</label>
+          <select id="filter-domisili"><option>Semua</option></select>
+        </div>
+        <div class="filter-item">
+          <label for="filter-cari">Cari Investor</label>
+          <input id="filter-cari" type="text" placeholder="Ketik nama investor...">
+        </div>
+        <div class="filter-item">
+          <button id="btn-reset" class="btn-reset">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main class="container">
+    <!-- KPI CARDS -->
+    <section class="kpis">
+      <div class="kpi">
+        <div class="kpi-label">Total Emiten</div>
+        <div class="kpi-value" id="kpi-emiten">0</div>
+        <div class="kpi-sub">unik</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Investor Unik</div>
+        <div class="kpi-value" id="kpi-investor">0</div>
+        <div class="kpi-sub">unik</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Total Lembar Saham</div>
+        <div class="kpi-value" id="kpi-shares">0</div>
+        <div class="kpi-sub">sum TOTAL_HOLDING_SHARES</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Rata-rata %</div>
+        <div class="kpi-value" id="kpi-avg">0</div>
+        <div class="kpi-sub">avg PERCENTAGE</div>
+      </div>
+    </section>
+
+    <!-- CHARTS -->
+    <section class="charts">
+      <div class="card">
+        <h3>Komposisi Lokal vs Asing</h3>
+        <div class="sub">berdasarkan jumlah lembar</div>
+        <div class="chart-wrap"><canvas id="chart-donut"></canvas></div>
+      </div>
+      <div class="card">
+        <h3 id="bar-title">Investor Terbesar</h3>
+        <div class="sub" id="bar-sub">berdasarkan total lembar</div>
+        <div class="chart-wrap"><canvas id="chart-bar"></canvas></div>
+      </div>
+    </section>
+
+    <!-- TABLE -->
+    <section class="card table-card">
+      <div class="table-head">
+        <h3>Data Kepemilikan</h3>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="EMITEN">Emiten</th>
+              <th data-sort="INVESTOR">Investor</th>
+              <th data-sort="TIPE">Tipe</th>
+              <th data-sort="LA">L/A</th>
+              <th data-sort="DOMISILI">Domisili</th>
+              <th data-sort="TOTAL_HOLDING_SHARES" class="right">Jumlah Saham</th>
+              <th data-sort="PERCENTAGE" class="right">%</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="7" class="empty">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <div id="page-info">0–0 dari 0 data</div>
+        <div>
+          <button id="prev">Prev</button>
+          <button id="next">Next</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Dashboard dibuat oleh <a href="https://www.harisfirdaus.id/" target="_blank" rel="noopener">Haris Firdaus</a>
+  </footer>
+
+  <script src="./assets/app.js"></script>
+</body>
+</html>
