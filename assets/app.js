@@ -13,24 +13,33 @@ let donutChart, barChart;
 
 function parseNumber(str){
   if(typeof str === 'number') return str;
+  if(!str) return 0;
   return parseInt(String(str).replace(/\./g,'').replace(/,/g,''),10) || 0;
 }
 function parsePercent(str){
   if(typeof str === 'number') return str;
+  if(!str) return 0;
   return parseFloat(String(str).replace(',','.')) || 0;
 }
 
 async function loadData(){
-  const res = await fetch('./data/data.json');
-  const json = await res.json();
-  rawData = json.map(d => ({
-    ...d,
-    _shares: parseNumber(d.TOTAL_HOLDING_SHARES),
-    _pct: parsePercent(d.PERCENTAGE),
-    _emitenLabel: `${d.SHARE_CODE} - ${d.ISSUER_NAME}`
-  }));
-  initFilters();
-  applyFilters();
+  try {
+    const res = await fetch('./data/data.json');
+    const json = await res.json();
+    // filter baris kosong / null
+    const clean = json.filter(d => d && d.SHARE_CODE && d.INVESTOR_NAME);
+    rawData = clean.map(d => ({
+      ...d,
+      _shares: parseNumber(d.TOTAL_HOLDING_SHARES),
+      _pct: parsePercent(d.PERCENTAGE),
+      _emitenLabel: `${d.SHARE_CODE} - ${d.ISSUER_NAME}`
+    }));
+    initFilters();
+    applyFilters();
+  } catch(e){
+    console.error('Gagal load data.json', e);
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="7" class="empty">Gagal memuat data.json. Pastikan file ada di /data/data.json</td></tr>`;
+  }
 }
 
 function initFilters(){
@@ -38,14 +47,14 @@ function initFilters(){
   const emitenInput = document.getElementById('filter-emiten');
   const emitenList = document.getElementById('emiten-list');
   const emitens = [...new Map(rawData.map(d=>[d._emitenLabel, d])).values()]
-    .sort((a,b)=>a.SHARE_CODE.localeCompare(b.SHARE_CODE));
+    .sort((a,b)=>(a.SHARE_CODE||'').localeCompare(b.SHARE_CODE||''));
   
   function updateEmitenList(q=''){
     emitenList.innerHTML = '<option value="Semua"></option>';
     if(q.length < 2) return;
     const filtered = emitens.filter(e => 
-      e.SHARE_CODE.toLowerCase().includes(q.toLowerCase()) ||
-      e.ISSUER_NAME.toLowerCase().includes(q.toLowerCase())
+      (e.SHARE_CODE||'').toLowerCase().includes(q.toLowerCase()) ||
+      (e.ISSUER_NAME||'').toLowerCase().includes(q.toLowerCase())
     ).slice(0,50);
     filtered.forEach(e=>{
       const opt = document.createElement('option');
@@ -117,7 +126,7 @@ function applyFilters(){
     const matchTipe = tipe === 'Semua' || d.INVESTOR_TYPE === tipe;
     const matchAsal = asal === 'Semua' || (asal.includes('(L)') && d.LOCAL_FOREIGN === 'L') || (asal.includes('(A)') && d.LOCAL_FOREIGN === 'A');
     const matchDom = dom === 'Semua' || d.DOMICILE === dom;
-    const matchCari = !cari || d.INVESTOR_NAME.toLowerCase().includes(cari);
+    const matchCari = !cari || (d.INVESTOR_NAME||'').toLowerCase().includes(cari);
     return matchEmiten && matchTipe && matchAsal && matchDom && matchCari;
   });
 
